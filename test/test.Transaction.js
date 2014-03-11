@@ -1,6 +1,7 @@
 'use strict';
 
 var chai = chai || require('chai');
+chai.Assertion.includeStack = true;
 var bitcore = bitcore || require('../bitcore');
 
 var should = chai.should();
@@ -43,9 +44,10 @@ describe('Transaction', function() {
         inputs.forEach(function(vin) {
           var hash = vin[0];
           var index = vin[1];
-          var scriptPubKey = new Script(new Buffer(vin[2]));
+          debugger;
+          var scriptPubKey = Script.fromHumanReadable(vin[2]);
           inputScriptPubKeys.push(scriptPubKey);
-          console.log(scriptPubKey.getStringContent());
+          console.log(scriptPubKey.toHumanReadable());
           console.log('********************************');
 
         });
@@ -57,11 +59,26 @@ describe('Transaction', function() {
 
         var n = 0;
         inputScriptPubKeys.forEach(function(scriptPubKey) {
-          tx.verifyInput(0, scriptPubKey, function(err, results) {
-            should.not.exist(err);
-            should.exist(results);
-            results.should.equal(true);
+          var err = undefined;
+          var results = undefined;
+          var inputVerified = false;
+
+          tx.verifyInput(n, scriptPubKey, function(e, r) {
+            // Exceptions raised inside this function will be handled
+            // ...by this function, so don't do it.
+            err = e;
+            results = r;
+            inputVerified = true;
           });
+
+          // TODO(mattfaus): Add a Promise or something that makes this code
+          // execute only after the verifyInput() callback has finished
+          while (!inputVerified) { }
+
+          should.not.exist(err);
+          should.exist(results);
+          results.should.equal(true);
+
           n += 1;
         });
 
