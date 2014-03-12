@@ -1,3 +1,4 @@
+'use strict';
 
 var chai = chai || require('chai');
 var bitcore = bitcore || require('../bitcore');
@@ -6,6 +7,11 @@ var should = chai.should();
 var buffertools = require('buffertools');
 
 describe('util', function() {
+  describe('exist', function() {
+    it('should initialze the util object', function() {
+      should.exist(bitcore.util);
+    });
+  });
   describe('#parseValue', function() {
     it('should convert floating points to satoshis correctly', function() {
       function test_value(datum) {
@@ -16,14 +22,14 @@ describe('util', function() {
         bn.toString().should.equal(intStr);
       }
       var dataValues = [
-        ["0", "0"],
-        ["1.0", "100000000"],
-        ["0.1", "10000000"],
-        [".1", "10000000"],
-        ["0.0005", "50000"],
-        [".000000001", "0"],
-        [".000000009", "0"],
-        [".00000000000000001", "0"]
+        ['0', '0'],
+        ['1.0', '100000000'],
+        ['0.1', '10000000'],
+        ['.1', '10000000'],
+        ['0.0005', '50000'],
+        ['.000000001', '0'],
+        ['.000000009', '0'],
+        ['.00000000000000001', '0']
       ];
       dataValues.forEach(function(datum) {
         test_value(datum);
@@ -49,11 +55,11 @@ describe('util', function() {
   });
   describe('#intToBuffer', function() {
     var data = [
-      [0, '00000000'],
-      [-0, '00000000'],
-      [-1, 'ffffffff'],
-      [1, '01000000'],
-      [18, '12000000'],
+      [0, '00'],
+      [-0, '00'],
+      [-1, 'ff'],
+      [1, '01'],
+      [18, '12'],
       [878082192, '90785634'],
       [0x01234567890, '1200000090785634'],
       [-4294967297, 'feffffffffffffff'],
@@ -92,7 +98,7 @@ describe('util', function() {
   });
   describe('#getVarIntSize', function() {
     var data = [
-      [0, 1 ],
+      [0, 1],
       [1, 1],
       [252, 1],
       [253, 3],

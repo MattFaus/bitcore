@@ -12,7 +12,7 @@ var In;
 var Out;
 var Script = bitcore.Script;
 var buffertools = require('buffertools');
-var test_data = require('./testdata');
+var testdata = testdata || require('./testdata');
 
 // Read tests from test/data/tx_valid.json and tx_invalid.json
 // Format is an array of arrays
@@ -70,7 +70,7 @@ describe('Transaction', function() {
   });
 
   // Verify that known valid transactions are intepretted correctly
-  test_data.dataTxValid.forEach(function(datum) {
+  testdata.dataTxValid.forEach(function(datum) {
     var testTx = parse_test_transaction(datum);
     if (!testTx) return;
     var transactionString = buffertools.toHex(
