@@ -651,7 +651,7 @@ Transaction.prototype.parse = function (parser) {
   var i, sLen, startPos = parser.pos;
 
   this.version = parser.word32le();
-  
+
   var txinCount = parser.varInt();
 
   this.ins = [];
@@ -677,6 +677,51 @@ Transaction.prototype.parse = function (parser) {
 
   this.lock_time = parser.word32le();
   this.calcHash();
+};
+
+Transaction.simpleSend = function(prevTxId, prevTxOutputIndex, privateKey,
+  receiverAddress, btc) {
+  // TODO(mattfaus): Check for mainnet/testnet
+
+  var txobj = {
+    version:   111, // 111 testnet, 1 mainnet
+    lock_time: 0,
+    ins:       [],
+    outs:      []
+  }
+
+  // TODO(mattfaus): Compute signature with private key
+  var privKeyObj = new PrivateKey(privateKey); // base58 string
+  var rawPrivKey = privateKey.as("binary");
+
+  var txin = {
+    s: util.EMPTY_BUFFER, // Add signature
+    q: 0xffffffff
+  };
+
+  var hash = new Buffer(prevTxId.split('').reverse(), 'hex');
+
+  var vout    = parseInt(prevTxOutputIndex);
+  var voutBuf = new Buffer(4);
+
+  voutBuf.writeUInt32LE(vout, 0);
+  txin.o = Buffer.concat([hash, voutBuf]);
+  txobj.ins.push(txin);
+
+  var addr     = new Address(receiverAddress);
+  var script   = Script.createPubKeyHashOut(addr.payload());
+
+  // TODO(mattfaus): Check to see if btc is a string or number
+  var valueNum = util.parseValue(btc);
+  var value    = util.bigIntToValue(valueNum);
+
+  var txout = {
+    v: value,
+    s: script.getBuffer(),
+  };
+  txobj.outs.push(txout);
+
+  return new Transaction(txobj);
 };
 
 var TransactionInputsCache = exports.TransactionInputsCache =

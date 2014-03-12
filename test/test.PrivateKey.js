@@ -29,4 +29,10 @@ describe('PrivateKey', function() {
 
     privkey.as('base58').should.equal('cTpB4YiyKiBcPxnefsDpbnDxFDffjqJob8wGCEDXxgQ7zQoMXJdH');
   });
+  it('should convert base58 testnet private key to compressed public key to base58check format', function() {
+    var base58 = 'cPC4YSFiHHqbUCmWyh4u1bv1Bz5iTNZqQJUMPFt2uMVPtwFFE1Fj';
+    var privkey = new PrivateKey(base58);
+
+    privkey.as('base58').should.equal('cTpB4YiyKiBcPxnefsDpbnDxFDffjqJob8wGCEDXxgQ7zQoMXJdH');
+  });
 });
